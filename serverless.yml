@@ -1,0 +1,50 @@
+# name of service in AWS
+service: downloaders
+
+# supported Serverless version
+frameworkVersion: ">=1.1.0 <2.0.0"
+
+custom:
+  # creating variable so it's DRY
+  bucket: demo-lambda-images
+
+layers:
+  # definition of basic layer
+  basic:
+    path: layer_basic
+    name: basic
+    compatibleRuntimes:
+      - nodejs12.x
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  # with stage you can create multiple versions of same Lambda
+  stage: dev
+  # choose a region close to your customers region
+  region: eu-west-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        # IAM permissions needed for uploading files
+        - s3:PutObject
+        - s3:PutObjectAcl
+      Resource: "arn:aws:s3:::${self:custom.bucket}/*"
+
+functions:
+  # this name will be shown in AWS
+  fetchStoreImage:
+    # has to match exported name in handler.js
+    handler: handler.fetchStoreImage
+    layers:
+      # special syntax:
+      # layer name TitleCased (without spaces) + LambdaLayer postfix
+      - { Ref: BasicLambdaLayer }
+    environment:
+      # creating process.env.BUCKET variable
+      BUCKET: ${self:custom.bucket}
+    events:
+        - http:
+            # creating POST /fetch-store-image endpoint
+            method: post
+            path: fetch-store-image
