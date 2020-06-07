@@ -26,7 +26,7 @@ const createReturnObject = (body, statusCode = 200) => ({
 
 // main lambda function handler
 module.exports.fetchStoreImage = async (event) => {
-  let { url } = JSON.parse(event.body);
+  const { url } = JSON.parse(event.body);
 
   if (!url) {
     return createReturnObject({
@@ -35,7 +35,8 @@ module.exports.fetchStoreImage = async (event) => {
     });
   }
 
-  const response = await fetch(url);
+  const response = await fetch(url)
+    .catch(() => ({ ok: false }));
 
   if (!response.ok) {
     return createReturnObject({
