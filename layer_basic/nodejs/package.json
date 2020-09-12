@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "image-type": "^4.1.0",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "uuid": "^8.0.0"
   }
 }
